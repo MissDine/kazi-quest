@@ -55,10 +55,6 @@ onMounted(() => {
 					id="content" 
 					placeholder="Create a new to do"
 					v-model="input_content" />
-				
-				
-
-				<input type="submit" value="Add todo" />
 			</form>
 		</section>
 
