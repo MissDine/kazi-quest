@@ -1,8 +1,7 @@
 <template>
-  <h1>Vue 3 Todo App</h1>
+  <h1>TODO</h1>
   <form @submit.prevent="addNewTodo">
-    <label>New Todo</label>
-    <input v-model="newTodo" name="newTodo">
+    <input v-model="newTodo" name="newTodo" placeholder="Create new todo">
     <button>Add New Todo</button>
   </form>
   <button @click="removeAllTodos">Remove All</button>
