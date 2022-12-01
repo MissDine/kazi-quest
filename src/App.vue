@@ -1,91 +1,79 @@
+<template>
+  <h1>Vue 3 Todo App</h1>
+  <form @submit.prevent="addNewTodo">
+    <label>New Todo</label>
+    <input v-model="newTodo" name="newTodo">
+    <button>Add New Todo</button>
+  </form>
+  <button @click="removeAllTodos">Remove All</button>
+  <button @click="markAllDone">Mark All Done</button>
+  <ul>
+    <li v-for="(todo, index) in todos" :key="todo.id" class="todo">
+      <h3 :class="{ done: todo.done }" @click="toggleDone(todo)">{{todo.content}}</h3>
+      <button @click="removeTodo(index)">Remove Todo</button>
+    </li>
+  </ul>
+</template>
 
-
-<script setup>
-import { ref, onMounted, computed, watch } from 'vue'
-const todos = ref([])
-const name = ref('')
-const input_content = ref('')
-const input_category = ref(null)
-const todos_asc = computed(() => todos.value.sort((a,b) =>{
-	return a.createdAt - b.createdAt
-}))
-watch(name, (newVal) => {
-	localStorage.setItem('name', newVal)
-})
-watch(todos, (newVal) => {
-	localStorage.setItem('todos', JSON.stringify(newVal))
-}, {
-	deep: true
-})
-const addTodo = () => {
-	if (input_content.value.trim() === '' || input_category.value === null) {
-		return
-	}
-	todos.value.push({
-		content: input_content.value,
-		category: input_category.value,
-		done: false,
-		editable: false,
-		createdAt: new Date().getTime()
-	})
+<script>
+import { ref } from 'vue';
+export default {
+  setup() {
+    const newTodo = ref('');
+    const todos = ref([]);
+    function addNewTodo() {
+      todos.value.push({
+        id: Date.now(),
+        done: false,
+        content: newTodo.value,
+      });
+      newTodo.value = '';
+    }
+    function toggleDone(todo) {
+      todo.done = !todo.done;
+    }
+    function removeTodo(index) {
+      todos.value.splice(index, 1);
+    }
+    function markAllDone() {
+      todos.value.forEach((todo) => todo.done = true);
+    }
+    function removeAllTodos() {
+      todos.value = [];
+    }
+    return {
+      todos,
+      newTodo,
+      addNewTodo,
+      toggleDone,
+      removeTodo,
+      markAllDone,
+      removeAllTodos,
+    };
+  }
 }
-const removeTodo = (todo) => {
-	todos.value = todos.value.filter((t) => t !== todo)
-}
-onMounted(() => {
-	name.value = localStorage.getItem('name') || ''
-	todos.value = JSON.parse(localStorage.getItem('todos')) || []
-})
 </script>
 
-<template>
-	<main class="app">
-		
-		<section class="greeting">
-			<h2 class="title">
-				What's up, <input type="text" id="name" placeholder="Name here" v-model="name">
-			</h2>
-		</section>
-
-		<section class="create-todo">
-			<h3>CREATE A TODO</h3>
-
-			<form id="new-todo-form" @submit.prevent="addTodo">
-				<h4>What's on your todo list?</h4>
-				<input 
-					type="text" 
-					name="content" 
-					id="content" 
-					placeholder="e.g. make a video"
-					v-model="input_content" />
-			</form>
-		</section>
-
-		<section class="todo-list">
-			<h3>TODO LIST</h3>
-			<div class="list" id="todo-list">
-
-				<div v-for="todo in todos_asc" :class="`todo-item ${todo.done && 'done'}`">
-					<label>
-						<input type="checkbox" v-model="todo.done" />
-						<span :class="`bubble ${
-							todo.category == 'business' 
-								? 'business' 
-								: 'personal'
-						}`"></span>
-					</label>
-
-					<div class="todo-content">
-						<input type="text" v-model="todo.content" />
-					</div>
-
-					<div class="actions">
-						<button class="delete" @click="removeTodo(todo)">Delete</button>
-					</div>
-				</div>
-
-			</div>
-		</section>
-
-	</main>
-</template>
+<style>
+body {
+  font-family: sans-serif;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  font-size: 2em;
+  width: 80%;
+  margin: 0 auto;
+}
+input, textarea, button, p, div, section, article, select {
+  display: 'block';
+  width: 100%;
+  font-family: sans-serif;
+  font-size: 1em;
+  margin: 0.5em;
+}
+.todo {
+  cursor: pointer;
+}
+.done {
+  text-decoration: line-through;
+}
+</style>
